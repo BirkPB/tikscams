@@ -45,6 +45,9 @@
         input[type="submit"]:hover {
             background-color: #555;
         }
+        .error {
+            color: red;
+        }
     </style>
 </head>
 <body>
@@ -57,19 +60,31 @@
             <input type="text" id="link" name="link" required>
             <label for="reason">Reason for Report:</label>
             <textarea id="reason" name="reason" rows="4" required minlength="20" maxlength="200"></textarea>
-            <div id="reasonCounter">0/20</div>
+            <div id="reasonCounter" class="error">0/20</div>
             <label for="file">Attach File (optional):</label>
             <input type="file" id="file" name="file">
-            <input type="submit" value="Submit" onclick="submitForm(event)">
+            <input type="submit" value="Submit" onclick="submitForm(event)" disabled>
         </form>
     </main>
 
     <script>
-        // Character counter for reason field
-        document.getElementById('reason').addEventListener('input', function() {
+        // Character counter and validation for reason field
+        const reasonField = document.getElementById('reason');
+        const reasonCounter = document.getElementById('reasonCounter');
+        const submitButton = document.querySelector('input[type="submit"]');
+
+        reasonField.addEventListener('input', function() {
             const maxLength = 200;
             const currentLength = this.value.length;
-            document.getElementById('reasonCounter').innerText = currentLength + '/' + maxLength;
+            reasonCounter.innerText = currentLength + '/20';
+
+            if (currentLength < 20) {
+                reasonCounter.classList.add('error');
+                submitButton.disabled = true;
+            } else {
+                reasonCounter.classList.remove('error');
+                submitButton.disabled = false;
+            }
         });
 
         function submitForm(event) {
@@ -124,13 +139,4 @@
                 }
 
                 alert('Report submitted successfully!');
-                document.getElementById('reportForm').reset(); // Clear form fields
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred while submitting the report. Please try again later.');
-            });
-        }
-    </script>
-</body>
-</html>
+                document.getElementById('reportForm').reset(); // Clear
