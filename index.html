@@ -72,6 +72,13 @@
             const fileInput = document.getElementById('file');
             const file = fileInput.files[0];
 
+            // Validate link
+            const linkRegex = /^(ftp|http|https):\/\/[^ "]+$/;
+            if (!linkRegex.test(link)) {
+                alert('Please enter a valid URL for the suspicious link.');
+                return;
+            }
+
             // Prepare form data with file
             const formData = new FormData();
             formData.append('link', link);
