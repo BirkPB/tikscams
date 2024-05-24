@@ -25,7 +25,7 @@
             border-radius: 5px;
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
         }
-        input[type="text"], textarea {
+        input[type="text"], input[type="file"], textarea {
             width: 100%;
             padding: 10px;
             margin: 5px 0;
@@ -45,13 +45,6 @@
         input[type="submit"]:hover {
             background-color: #555;
         }
-        footer {
-            text-align: center;
-            margin-top: 20px;
-            padding: 10px;
-            background-color: #333;
-            color: #fff;
-        }
     </style>
 </head>
 <body>
@@ -59,17 +52,16 @@
         <h1>Report Phishing and Scams</h1>
     </header>
     <main>
-        <form id="reportForm">
+        <form id="reportForm" enctype="multipart/form-data">
             <label for="link">Suspicious Link:</label>
             <input type="text" id="link" name="link" required>
             <label for="reason">Reason for Report:</label>
             <textarea id="reason" name="reason" rows="4" required></textarea>
+            <label for="file">Attach File (optional):</label>
+            <input type="file" id="file" name="file">
             <input type="submit" value="Submit" onclick="submitForm(event)">
         </form>
     </main>
-    <footer>
-        &copy; 2024 Your Website Name | <a href="#">Privacy Policy</a> | <a href="#">Contact Us</a>
-    </footer>
 
     <script>
         function submitForm(event) {
@@ -77,19 +69,21 @@
 
             const link = document.getElementById('link').value;
             const reason = document.getElementById('reason').value;
+            const fileInput = document.getElementById('file');
+            const file = fileInput.files[0];
+
+            // Prepare form data with file
+            const formData = new FormData();
+            formData.append('link', link);
+            formData.append('reason', reason);
+            formData.append('file', file);
 
             // Send data to Discord webhook
             const webhookURL = 'https://discord.com/api/webhooks/1243669263072493690/pPOn7_Z0l9V2dslIG2rolF9WBlaDPRD5lMFvv7cfa3jEIqWsojMjSSEADEXlEQwG4o8W';
-            const payload = {
-                content: `New phishing report: ${link}\nReason: ${reason}`
-            };
 
             fetch(webhookURL, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(payload)
+                body: formData
             })
             .then(response => {
                 if (response.ok) {
